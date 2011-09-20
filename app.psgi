@@ -7,16 +7,32 @@ use lib File::Spec->catdir(dirname(__FILE__), 'extlib', 'lib', 'perl5');
 use lib File::Spec->catdir(dirname(__FILE__), 'lib');
 use Plack::Builder;
 use Amon2::Lite;
+use MIME::Base64::URLSafe;
+use Cache::Memcached::Fast;
+use Cache::Memcached::IronPlate;
 
 # put your configuration here
 sub config {
-    +{
-    }
+    state $config;
+    $config ||= do 'config/config.pl';
+    $config;
 }
 
-get '/' => sub {
-    my $c = shift;
-    return $c->render('index.tt');
+sub cache {
+    my $self = shift;
+    state $memd;
+    $mend ||= Cache::Memcached::IronPlate->new(
+        cache   => Cache::Memcached::Fast->new({
+            servers => $self->config->{servers}{cache},
+        }),
+    );
+    $mend;
+}
+
+get '/:base64' => sub {
+    my ($c, $args) = @_;
+    my $block_diag = urlsafe_b64decode($args->{base64});
+
 };
 
 # for your security
@@ -48,17 +64,3 @@ builder {
     __PACKAGE__->to_app();
 };
 
-__DATA__
-
-@@ index.tt
-<!doctype html>
-<html>
-<head>
-    <met charst="utf-8">
-    <title>BlockDiagSever</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-</head>
-<body>
-    BlockDiagSever
-</body>
-</html>
