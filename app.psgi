@@ -32,7 +32,7 @@ sub cache {
 }
 
 # base64 ex 'ewogIEEgLT4gQiAtPiBDOwogIEIgLT4gRDsKfQ'
-get '/:base64' => sub {
+get '/blockdiag/:base64' => sub {
     my ($c, $args) = @_;
     my $base64 = $args->{base64};
     my $png = $c->cache->get($base64);
@@ -45,6 +45,12 @@ get '/:base64' => sub {
 
     $c->create_response(200, ['Content-Type' => 'image/png'], $png);
 };
+
+get '/demo' => sub {
+    my $c = shift;
+    $c->render('demo.tt');
+};
+
 
 # for your security
 __PACKAGE__->add_trigger(
@@ -74,4 +80,26 @@ builder {
 
     __PACKAGE__->to_app();
 };
-
+__DATA__
+@@ demo.tt
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>title</title>
+<script type="text/javascript" src="/static/js/base64.js"></script>
+<script type="text/javascript">
+function $(id) {return document.getElementById(id);};
+</script>
+</head>
+<body>
+<img src="" id="blockdiagimg">
+<textarea id="blockdiag" rows="20" cols="100">{
+  A -> B -> C;
+       B -> D;
+}</textarea>
+<input type="button" value="生成" onclick="(function(){
+  $('blockdiagimg').src = '/blockdiag/' + Base64.encode($('blockdiag').value);
+})()"/>
+</body>
+</html>
