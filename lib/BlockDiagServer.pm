@@ -14,7 +14,7 @@ sub render {
     $fh->close;
 
     my $err;
-    run ['blockdiag', '-a', $filename], undef, undef, \$err or die $err;
+    run ['blockdiag', $filename], undef, undef, \$err or die $err;
 
     my $png_file = $filename .'.png';
     do {
