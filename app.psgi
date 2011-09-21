@@ -11,7 +11,7 @@ use Amon2::Lite;
 use MIME::Base64::URLSafe;
 use Cache::Memcached::Fast;
 use Cache::Memcached::IronPlate;
-use BlockDiagServer;
+use blockdiagServer;
 
 # put your configuration here
 sub config {
@@ -39,7 +39,7 @@ get '/blockdiag/:base64' => sub {
 
     unless ($png) {
         my $block_diag = urlsafe_b64decode($base64);
-        $png = BlockDiagServer::render($block_diag);
+        $png = blockdiagServer::render($block_diag);
         $c->cache->set($base64 => $png);
     }
 

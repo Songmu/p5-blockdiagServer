@@ -1,4 +1,4 @@
-package BlockDiagServer;
+package blockdiagServer;
 use strict;
 use warnings;
 use utf8;
