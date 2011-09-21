@@ -19,7 +19,7 @@ sub render {
     my $png_file = $filename .'.png';
     do {
         local $/;
-        open my $fh, '<:raw', $png_file;
+        open my $fh, '<:raw', $png_file or die 'no file';
         <$fh>
     };
 
