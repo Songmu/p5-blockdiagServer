@@ -38,7 +38,7 @@ get '/demo/:diagram' => sub {
     my $diagram = $args->{diagram};
     return $c->res_404 unless $diagram ~~ $diagrams;
 
-    $c->render('demo.tt', {diagram => $diagram});
+    $c->render('demo.tt', {diagram => $diagram, diagrams => $diagrams});
 };
 
 
@@ -95,20 +95,24 @@ __DATA__
 <html>
 <head>
 <meta charset="utf-8" />
-<title>title</title>
+<title>[% diagram %]</title>
 <script type="text/javascript" src="/static/js/base64.js"></script>
 <script type="text/javascript">
 function $(id) {return document.getElementById(id);};
 </script>
 </head>
 <body>
-<img src="" id="blockdiagimg">
+<h1>[% diagram %]</h1>
+[% FOREACH di IN diagrams -%]
+ <a href="/demo/[% di %]">[% di %]</a> |
+[% END -%]
+<div><img src="" id="blockdiagimg"></div>
 <textarea id="blockdiag" rows="20" cols="100">{
   A -> B -> C;
        B -> D;
 }</textarea>
 <input type="button" value="生成" onclick="(function(){
-  $('blockdiagimg').src = '/[% $diagram %]/' + Base64.encode($('blockdiag').value);
+  $('blockdiagimg').src = '/[% diagram %]/' + Base64.encode($('blockdiag').value);
 })()"/>
 </body>
 </html>
