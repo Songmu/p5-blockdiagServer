@@ -6,7 +6,8 @@ use IPC::Run qw/run/;
 use File::Temp qw/tempfile/;
 
 sub render {
-    my $blockdiag = shift;
+    my ($blockdiag, $cmd) = @_;
+    $cmd ||= 'blockdiag';
     local $| = 1;
     utf8::encode($blockdiag) if utf8::is_utf8($blockdiag);
     my ($fh, $filename) = tempfile;
@@ -14,7 +15,7 @@ sub render {
     $fh->close;
 
     my $err;
-    run ['blockdiag', $filename], undef, undef, \$err or die $err;
+    run [$cmd, $filename], undef, undef, \$err or die $err;
 
     my $png_file = $filename .'.png';
     do {

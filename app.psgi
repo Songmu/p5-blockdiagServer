@@ -31,24 +31,33 @@ sub cache {
     $memd;
 }
 
+my $diagrams = [qw/blockdiag nwdiag/];
+
+get '/demo/:diagram' => sub {
+    my ($c, $args) = @_;
+    my $diagram = $args->{diagram};
+    return $c->res_404 unless $diagram ~~ $diagrams;
+
+    $c->render('demo.tt', {diagram => $diagram});
+};
+
+
 # base64 ex 'ewogIEEgLT4gQiAtPiBDOwogIEIgLT4gRDsKfQ'
-get '/blockdiag/:base64' => sub {
+get '/:diagram/:base64' => sub {
     my ($c, $args) = @_;
     my $base64 = $args->{base64};
+    my $diagram = $args->{diagram};
+    return $c->res_404 unless $diagram ~~ $diagrams;
+
     my $png = $c->cache->get($base64);
 
     unless ($png) {
         my $block_diag = urlsafe_b64decode($base64);
-        $png = blockdiagServer::render($block_diag);
+        $png = blockdiagServer::render($block_diag, $diagram);
         $c->cache->set($base64 => $png);
     }
 
     $c->create_response(200, ['Content-Type' => 'image/png'], $png);
-};
-
-get '/demo' => sub {
-    my $c = shift;
-    $c->render('demo.tt');
 };
 
 
@@ -99,7 +108,7 @@ function $(id) {return document.getElementById(id);};
        B -> D;
 }</textarea>
 <input type="button" value="生成" onclick="(function(){
-  $('blockdiagimg').src = '/blockdiag/' + Base64.encode($('blockdiag').value);
+  $('blockdiagimg').src = '/[% $diagram %]/' + Base64.encode($('blockdiag').value);
 })()"/>
 </body>
 </html>
