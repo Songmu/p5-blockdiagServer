@@ -34,8 +34,14 @@ sub cache {
 # base64 ex 'ewogIEEgLT4gQiAtPiBDOwogIEIgLT4gRDsKfQ'
 get '/:base64' => sub {
     my ($c, $args) = @_;
-    my $block_diag = urlsafe_b64decode($args->{base64});
-    my $png = BlockDiagServer::render($block_diag);
+    my $base64 = $args->{base64};
+    my $png = $c->cache->get($base64);
+
+    unless ($png) {
+        my $block_diag = urlsafe_b64decode($base64);
+        $png = BlockDiagServer::render($block_diag);
+        $c->cache->set($base64 => $png);
+    }
 
     $c->create_response(200, ['Content-Type' => 'image/png'], $png);
 };
