@@ -31,7 +31,7 @@ sub cache {
     $memd;
 }
 
-my $diagrams = [qw/blockdiag nwdiag/];
+my $diagrams = [qw/blockdiag nwdiag actdiag seqdiag/];
 
 get '/demo/:diagram' => sub {
     my ($c, $args) = @_;
