@@ -8,7 +8,6 @@ use File::Temp qw/tempfile/;
 sub render {
     my ($blockdiag, $cmd) = @_;
     $cmd ||= 'blockdiag';
-    local $| = 1;
     utf8::encode($blockdiag) if utf8::is_utf8($blockdiag);
     my (undef, $filename) = tempfile;
 
