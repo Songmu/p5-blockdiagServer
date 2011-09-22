@@ -10,17 +10,14 @@ sub render {
     $cmd ||= 'blockdiag';
     local $| = 1;
     utf8::encode($blockdiag) if utf8::is_utf8($blockdiag);
-    my ($fh, $filename) = tempfile;
-    $fh->print($blockdiag);
-    $fh->close;
+    my (undef, $filename) = tempfile;
 
     my $err;
-    run [$cmd, $filename], undef, undef, \$err or die $err;
+    run [$cmd, '-o', $filename, '-'], \$blockdiag, undef, \$err or die $err;
 
-    my $png_file = $filename .'.png';
     do {
         local $/;
-        open my $fh, '<:raw', $png_file or die 'no file';
+        open my $fh, '<:raw', $filename or die 'no file';
         <$fh>
     };
 
