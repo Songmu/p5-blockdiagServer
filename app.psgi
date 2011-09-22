@@ -46,19 +46,30 @@ get '/demo/:diagram' => sub {
 get '/:diagram/:base64' => sub {
     my ($c, $args) = @_;
     my $base64 = $args->{base64};
+    $base64 =~ s/\.png$//i;
+
     my $diagram = $args->{diagram};
     return $c->res_404 unless $diagram ~~ $diagrams;
 
     my $cache_key = "$diagram-$base64";
-    my $png = $c->cache->get($cache_key);
+    my $image = $c->cache->get($cache_key);
 
-    unless ($png) {
+    ($base64, my $ext) = $base64 =~ /^([^.]*)(?:\.(.*))?$/;
+    $ext ||= 'png';
+    $ext = lc $ext;
+
+    unless ($image) {
         my $block_diag = urlsafe_b64decode($base64);
-        $png = blockdiagServer::render($block_diag, $diagram);
-        $c->cache->set($cache_key => $png);
+        $image = blockdiagServer::render($block_diag, $diagram, $ext);
+        $c->cache->set($cache_key => $image);
     }
 
-    $c->create_response(200, ['Content-Type' => 'image/png'], $png);
+    my $mime_type = {
+        pdf => 'application/pdf',
+        svg => 'application/xml+svg',
+    }->{$ext} || 'image/png';
+
+    $c->create_response(200, ['Content-Type' => $mime_type], $image);
 };
 
 
