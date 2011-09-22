@@ -12,7 +12,7 @@ sub render {
     my (undef, $filename) = tempfile;
 
     my $err;
-    run [$cmd, '-o', $filename, '-'], \$blockdiag, undef, \$err or die $err;
+    run [$cmd, '--antialias', '-o', $filename, '-'], \$blockdiag, undef, \$err or die $err;
 
     do {
         local $/;
