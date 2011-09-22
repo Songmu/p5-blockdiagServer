@@ -49,12 +49,13 @@ get '/:diagram/:base64' => sub {
     my $diagram = $args->{diagram};
     return $c->res_404 unless $diagram ~~ $diagrams;
 
-    my $png = $c->cache->get($base64);
+    my $cache_key = "$diagram-$base64";
+    my $png = $c->cache->get($cache_key);
 
     unless ($png) {
         my $block_diag = urlsafe_b64decode($base64);
         $png = blockdiagServer::render($block_diag, $diagram);
-        $c->cache->set($base64 => $png);
+        $c->cache->set($cache_key => $png);
     }
 
     $c->create_response(200, ['Content-Type' => 'image/png'], $png);
