@@ -67,6 +67,7 @@ get '/:diagram/:base64' => sub {
         $image = blockdiagServer::render($diag_text, $diagram, $ext);
         $c->cache->set($cache_key => $image);
     }
+    return $c->res_404 unless $image;
 
     my $mime_type = MIME::Types->new->mimeTypeOf($ext);
     $c->create_response(200, ['Content-Type' => $mime_type], $image);
