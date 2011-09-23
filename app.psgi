@@ -8,7 +8,7 @@ use lib File::Spec->catdir(dirname(__FILE__), 'extlib', 'lib', 'perl5');
 use lib File::Spec->catdir(dirname(__FILE__), 'lib');
 use Plack::Builder;
 use Amon2::Lite;
-use MIME::Base64::URLSafe;
+use MIME::Base64 qw/decode_base64url/;
 use MIME::Types;
 use Cache::Memcached::Fast;
 use Cache::Memcached::IronPlate;
@@ -62,8 +62,9 @@ get '/:diagram/:base64' => sub {
     return $c->res_404 unless $ext ~~ $types;
 
     unless ($image) {
-        my $block_diag = urlsafe_b64decode($base64);
-        $image = blockdiagServer::render($block_diag, $diagram, $ext);
+        my $diag_text = decode_base64url($base64);
+        # TODO: validate
+        $image = blockdiagServer::render($diag_text, $diagram, $ext);
         $c->cache->set($cache_key => $image);
     }
 

@@ -10,7 +10,7 @@ WriteMakefile(
         'Text::Xslate::Bridge::TT2Like'   => '0.00008',
         'Plack::Middleware::ReverseProxy' => '0.09',
         'Time::Piece'                     => '1.20',
-        'MIME::Base64::URLSafe'           => '0.01',
+        'MIME::Base64'                    => '3.12',
         'MIME::Types'                     => '0.01',
         'Cache::Memcached::Fast'          => '0.01',
         'Cache::Memcached::IronPlate'     => '0.01',
