@@ -9,6 +9,7 @@ use lib File::Spec->catdir(dirname(__FILE__), 'lib');
 use Plack::Builder;
 use Amon2::Lite;
 use MIME::Base64::URLSafe;
+use MIME::Types;
 use Cache::Memcached::Fast;
 use Cache::Memcached::IronPlate;
 use blockdiagServer;
@@ -32,6 +33,7 @@ sub cache {
 }
 
 my $diagrams = [qw/blockdiag nwdiag actdiag seqdiag/];
+my $types = [qw/png svg pdf/];
 
 get '/demo/:diagram' => sub {
     my ($c, $args) = @_;
@@ -57,6 +59,7 @@ get '/:diagram/:base64' => sub {
     ($base64, my $ext) = $base64 =~ /^([^.]*)(?:\.(.*))?$/;
     $ext ||= 'png';
     $ext = lc $ext;
+    return $c->res_404 unless $ext ~~ $types;
 
     unless ($image) {
         my $block_diag = urlsafe_b64decode($base64);
@@ -64,11 +67,7 @@ get '/:diagram/:base64' => sub {
         $c->cache->set($cache_key => $image);
     }
 
-    my $mime_type = {
-        pdf => 'application/pdf',
-        svg => 'application/xml+svg',
-    }->{$ext} || 'image/png';
-
+    my $mime_type = MIME::Types->new->mimeTypeOf($ext);
     $c->create_response(200, ['Content-Type' => $mime_type], $image);
 };
 

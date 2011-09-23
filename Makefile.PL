@@ -11,11 +11,13 @@ WriteMakefile(
         'Plack::Middleware::ReverseProxy' => '0.09',
         'Time::Piece'                     => '1.20',
         'MIME::Base64::URLSafe'           => '0.01',
+        'MIME::Types'                     => '0.01',
         'Cache::Memcached::Fast'          => '0.01',
         'Cache::Memcached::IronPlate'     => '0.01',
         'IPC::Run'                        => '0.01',
+        'File::Temp'
     },
-    MIN_PERL_VERSION => '5.008001',
+    MIN_PERL_VERSION => '5.012000',
     (-d 'xt' and $ENV{AUTOMATED_TESTING} || $ENV{RELEASE_TESTING}) ? (
         test => {
             TESTS => 't/*.t xt/*.t',
