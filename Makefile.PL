@@ -15,7 +15,7 @@ WriteMakefile(
         'Cache::Memcached::Fast'          => '0.01',
         'Cache::Memcached::IronPlate'     => '0.01',
         'IPC::Run'                        => '0.01',
-        'File::Temp'
+        'File::Temp'                      => '0.01',
     },
     MIN_PERL_VERSION => '5.012000',
     (-d 'xt' and $ENV{AUTOMATED_TESTING} || $ENV{RELEASE_TESTING}) ? (
