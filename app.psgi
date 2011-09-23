@@ -9,7 +9,7 @@ use lib File::Spec->catdir(dirname(__FILE__), 'lib');
 use Plack::Builder;
 use Amon2::Lite;
 use MIME::Base64 qw/decode_base64url/;
-use MIME::Types;
+use MIME::Types qw/by_suffix/;
 use Cache::Memcached::Fast;
 use Cache::Memcached::IronPlate;
 use blockdiagServer;
@@ -62,14 +62,14 @@ get '/:diagram/:base64' => sub {
     return $c->res_404 unless $ext ~~ $types;
 
     unless ($image) {
-        my $diag_text = decode_base64url($base64);
+        my $diag_text = decode_base64url $base64;
         # TODO: validate
         $image = blockdiagServer::render($diag_text, $diagram, $ext);
         $c->cache->set($cache_key => $image);
     }
     return $c->res_404 unless $image;
 
-    my $mime_type = MIME::Types->new->mimeTypeOf($ext);
+    my $mime_type = by_suffix $ext;
     $c->create_response(200, ['Content-Type' => $mime_type], $image);
 };
 
